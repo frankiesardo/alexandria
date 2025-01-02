@@ -1,9 +1,9 @@
 import type { Route } from "./+types/chat";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText } from "ai";
-import pdf from 'pdf-parse-debugging-disabled';
-import { parseEpub } from 'epub-parser-simple'
 import { head } from "@vercel/blob";
+import { parseEpub } from 'epub-parser-simple'
+import { extractText, getDocumentProxy } from 'unpdf'
 
 const openai = createOpenAICompatible({
   name: "openai-proxy",
@@ -11,12 +11,14 @@ const openai = createOpenAICompatible({
   headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
 });
 
+
 async function getPdf(url: string) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const data = await pdf(buffer);
-  return data.text;
+  const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer));
+
+  const { text } = await extractText(pdf, { mergePages: true });
+  return text;
 }
 
 async function getEpub(url: string) {
@@ -42,7 +44,10 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
   }
 
   const { url } = await head(id);
+
+  console.time(id)
   const text = isPdf ? await getPdf(url) : await getEpub(url);
+  console.timeEnd(id)
 
   const systemMessage = {
     role: "system",
