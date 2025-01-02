@@ -89,7 +89,7 @@ export default function Search() {
                             <h3 className="font-semibold">{book.title}</h3>
                             <p className="text-sm text-gray-600">{book.author}</p>
                             <p className="text-sm text-gray-500">
-                              {book.publisher} • {book.year}
+                              {book.publisher} • {book.year !== "0" && book.year}
                             </p>
                           </div>
 
@@ -177,7 +177,7 @@ function parseBooks(html: string): Book[] {
 
     for (const attr of attributes) {
       const match = part.match(new RegExp(`${attr}="([^"]*)"`));
-      if (match) book[attr] = match[1];
+      if (match) book[attr] = unescape(match[1])
     }
 
     // Extract content fields
@@ -190,11 +190,15 @@ function parseBooks(html: string): Book[] {
 
     for (const [field, pattern] of Object.entries(contentFields)) {
       const match = part.match(new RegExp(pattern));
-      if (match) book[field] = match[1].trim();
+      if (match) book[field] = unescape(match[1].trim());
     }
 
     books.push(book);
   }
 
   return books;
+}
+
+function unescape(s: string) {
+  return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'");;
 }
