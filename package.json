@@ -1,0 +1,42 @@
+{
+  "name": "alexandria",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build && node vercel/prepare.js",
+    "dev": "cross-env NODE_ENV=development node ./dev-server.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^0.0.13",
+    "@gxl/epub-parser": "^2.0.4",
+    "@react-router/express": "^7.1.1",
+    "@react-router/node": "^7.1.1",
+    "@types/pdf-parse": "^1.1.4",
+    "@vercel/blob": "^0.27.0",
+    "@vercel/node": "^3.2.25",
+    "ai": "^4.0.22",
+    "epub": "^1.2.1",
+    "express": "^4.21.1",
+    "isbot": "^5.1.17",
+    "pdf-parse": "^1.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.1.1",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^7.1.1",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
