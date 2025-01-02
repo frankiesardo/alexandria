@@ -13,7 +13,7 @@ export default function Home() {
   const isLoading = navigation.formAction === "/search"
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4 md:p-24">
+    <div className="flex flex-col items-center justify-center bg-gray-50 p-4 md:p-24">
       <div className="w-full max-w-md md:max-w-2xl">
         <div className="rounded-lg bg-white p-8 shadow-lg">
           <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">
@@ -36,6 +36,6 @@ export default function Home() {
           </Form>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

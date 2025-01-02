@@ -74,7 +74,7 @@ export default function Search() {
   const isNavigating = Boolean(navigation.location);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
+    <div className="flex flex-col items-center justify-center p-4 md:p-24">
       {isNavigating && (
         <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -156,7 +156,7 @@ export default function Search() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 
