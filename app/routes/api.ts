@@ -28,8 +28,6 @@ async function getEpub(url: string) {
   });
 
   const text = epubObj.sections?.map(section => section.toMarkdown!()).concat("\n\n");
-  console.log("foo")
-  console.log(text)
   return text;
 }
 

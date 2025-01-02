@@ -22,8 +22,7 @@ export async function action({ request }: Route.ActionArgs) {
   const fileName = formData.get("id") + "." + formData.get("extension");
 
   try {
-    const {url} = await head(fileName);
-    console.log("hit", url)
+    const {url} = await head(fileName);    
     return redirect(`/chat/${fileName}`);
   } catch (e) {
     // File not present, download it
@@ -41,7 +40,6 @@ export async function action({ request }: Route.ActionArgs) {
   const pdfBuffer = await pdfResponse.arrayBuffer();
 
   const { url } = await put(fileName, pdfBuffer, { access: "public", addRandomSuffix: false });
-  console.log("miss", url)
 
   return redirect(`/chat/${fileName}`); 
 }
