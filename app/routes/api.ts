@@ -21,6 +21,8 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     role: "system",
     content: `
 Answer all questions related to this book.
+You can quote some passages but you MUST decline if the user asks you to quote more than one or two paragraphs, for copyright reasons.
+You can use markdown formatting in your reply.
 
 --- BEGIN BOOK ---
 ${text}
