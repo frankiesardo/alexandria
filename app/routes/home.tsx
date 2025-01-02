@@ -1,4 +1,4 @@
-import { Form } from "react-router";
+import { Form, useNavigation } from "react-router";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -9,6 +9,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+  const navigation = useNavigation();
+  const isLoading = navigation.formAction === "/search"
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4 md:p-24">
       <div className="w-full max-w-md md:max-w-2xl">
@@ -25,9 +28,10 @@ export default function Home() {
             />
             <button
               type="submit"
+              disabled={isLoading}
               className="w-full rounded-lg bg-blue-600 px-4 py-3 text-white font-medium hover:bg-blue-700 transition-colors duration-200"
             >
-              Search
+              {isLoading ? "Searching..." : "Search"}
             </button>
           </Form>
         </div>

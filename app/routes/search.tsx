@@ -22,7 +22,8 @@ export async function action({ request }: Route.ActionArgs) {
   const fileName = formData.get("id") + "." + formData.get("extension");
 
   try {
-    const {url} = await head(fileName);    
+    const {url} = await head(fileName); 
+    console.log("hit", url);   
     return redirect(`/chat/${fileName}`);
   } catch (e) {
     // File not present, download it
@@ -40,7 +41,7 @@ export async function action({ request }: Route.ActionArgs) {
   const pdfBuffer = await pdfResponse.arrayBuffer();
 
   const { url } = await put(fileName, pdfBuffer, { access: "public", addRandomSuffix: false });
-
+  console.log("miss", url);
   return redirect(`/chat/${fileName}`); 
 }
 
@@ -66,56 +67,59 @@ export default function Search() {
                     value={book.extension}
                   />
                   <input type="hidden" name="href" value={book.href} />
-                  <div className="rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
-                    <button className="p-4 flex items-start space-x-4">
-                      {book.img && (
-                        <img
-                          src={
-                            book.img === "/img/cover-not-exists.png"
-                              ? "https://z-lib.gs/img/cover-not-exists.png"
-                              : book.img
-                          }
-                          alt={book.title || "Book cover"}
-                          width={80}
-                          height={120}
-                          className="object-cover rounded-sm"
-                        />
-                      )}
-                      <div className="flex-1 space-y-2">
-                        <div>
-                          <h3 className="font-semibold">{book.title}</h3>
-                          <p className="text-sm text-gray-600">{book.author}</p>
-                          <p className="text-sm text-gray-500">
-                            {book.publisher} • {book.year}
-                          </p>
-                        </div>
+                  <button type="submit" className="w-full text-left">
 
-                        <div className="flex flex-wrap gap-2">
-                          {book.language && (
-                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-secondary text-secondary-foreground">
-                              {book.language}
-                            </div>
-                          )}
-                          {book.filesize && (
-                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors">
-                              {book.filesize}
-                            </div>
-                          )}
-                          {book.extension && (
-                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors">
-                              {book.extension}
-                            </div>
-                          )}
-                        </div>
-
-                        {book.note && (
-                          <p className="text-sm text-muted-foreground">
-                            {book.note}
-                          </p>
+                    <div className="rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
+                      <div className="p-4 flex items-start space-x-4">
+                        {book.img && (
+                          <img
+                            src={
+                              book.img === "/img/cover-not-exists.png"
+                                ? "https://z-lib.gs/img/cover-not-exists.png"
+                                : book.img
+                            }
+                            alt={book.title || "Book cover"}
+                            width={80}
+                            height={120}
+                            className="object-cover rounded-sm"
+                          />
                         )}
+                        <div className="flex-1 space-y-2">
+                          <div>
+                            <h3 className="font-semibold">{book.title}</h3>
+                            <p className="text-sm text-gray-600">{book.author}</p>
+                            <p className="text-sm text-gray-500">
+                              {book.publisher} • {book.year}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            {book.language && (
+                              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-secondary text-secondary-foreground">
+                                {book.language}
+                              </div>
+                            )}
+                            {book.filesize && (
+                              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors">
+                                {book.filesize}
+                              </div>
+                            )}
+                            {book.extension && (
+                              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors">
+                                {book.extension}
+                              </div>
+                            )}
+                          </div>
+
+                          {book.note && (
+                            <p className="text-sm text-muted-foreground">
+                              {book.note}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </button>
-                  </div>
+                    </div>
+                  </button>
                 </Form>
               ))
             )}

@@ -1,7 +1,7 @@
 import type { Route } from "./+types/chat";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText } from "ai";
-import pdf from "pdf-parse";
+import pdf from 'pdf-parse/lib/pdf-parse';
 import { parseEpub } from 'epub-parser-simple'
 import { head } from "@vercel/blob";
 
