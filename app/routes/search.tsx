@@ -1,6 +1,8 @@
-import { Form, redirect, useLoaderData } from "react-router";
+import { Form, redirect, useLoaderData, useNavigation } from "react-router";
 import type { Route } from "./+types/search";
 import { put, head } from "@vercel/blob";
+import { extractText, getDocumentProxy } from "unpdf";
+import { parseEpub } from "epub-parser-simple";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -19,36 +21,65 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const fileName = formData.get("id") + "." + formData.get("extension");
+  const id = formData.get("id")
+  const extension = formData.get("extension")
+  const fileName = id + ".txt"
 
   try {
-    const {url} = await head(fileName); 
+    const { url } = await head(fileName); 
     console.log("hit", url);   
-    return redirect(`/chat/${fileName}`);
+    return redirect("/chat/" + id);
   } catch (e) {
     // File not present, download it
   }
 
-  const response = await fetch("https://z-lib.gs" + formData.get("href"));
+  const href = formData.get("href")
+  const response = await fetch("https://z-lib.gs" + href);
   const body = await response.text();
 
   const regex = /href="\/?(dl\/[^\/]+\/[^"]+)"/;
   const match = body.match(regex);
+  const downloadPath = match![1]
+  const downloadUrl = "https://z-lib.gs/" + downloadPath
 
-  const downloadUrl = match![1]
-
-  const pdfResponse = await fetch("https://z-lib.gs/" + downloadUrl);
-  const pdfBuffer = await pdfResponse.arrayBuffer();
-
-  const { url } = await put(fileName, pdfBuffer, { access: "public", addRandomSuffix: false });
+  const text = await (extension === "pdf" ? getPdf(downloadUrl) : getEpub(downloadUrl));
+  const { url } = await put(fileName, text!, { access: "public", addRandomSuffix: false });
   console.log("miss", url);
-  return redirect(`/chat/${fileName}`); 
+
+  return redirect("/chat/" + id);
+}
+
+async function getPdf(url: string) {
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
+  const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer));
+
+  const { text } = await extractText(pdf, { mergePages: true });
+  return text;
+}
+
+async function getEpub(url: string) {
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const epubObj = await parseEpub(buffer);
+
+  const text = epubObj.sections?.map(section => section.parsed_data.map(data => data.value).join("\n")).join("\n\n");
+  return text;
 }
 
 export default function Search() {
   const books = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
+      {isNavigating && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
       <div className="w-full max-w-md md:max-w-4xl">
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Search Results</h2>
@@ -68,7 +99,6 @@ export default function Search() {
                   />
                   <input type="hidden" name="href" value={book.href} />
                   <button type="submit" className="w-full text-left">
-
                     <div className="rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
                       <div className="p-4 flex items-start space-x-4">
                         {book.img && (
