@@ -1,5 +1,6 @@
 import { useChat } from 'ai/react'
 import { useParams } from 'react-router';
+import Markdown from 'react-markdown'
 
 export default function ChatInterface() {
   const { id } = useParams();
@@ -20,7 +21,7 @@ export default function ChatInterface() {
             <p className="text-sm font-semibold mb-1">
               {message.role === 'user' ? 'You' : 'AI'}
             </p>
-            <p>{message.content}</p>
+            <p><Markdown>{message.content}</Markdown></p>
           </div>
         ))}
       </div>
