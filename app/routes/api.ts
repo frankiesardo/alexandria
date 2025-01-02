@@ -2,7 +2,7 @@ import type { Route } from "./+types/chat";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText } from "ai";
 import pdf from "pdf-parse";
-import { parseEpub } from '@gxl/epub-parser'
+import { parseEpub } from 'epub-parser-simple'
 import { head } from "@vercel/blob";
 
 const openai = createOpenAICompatible({
@@ -23,11 +23,9 @@ async function getEpub(url: string) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const epubObj = await parseEpub(buffer, {
-    type: 'buffer',
-  });
+  const epubObj = await parseEpub(buffer);
 
-  const text = epubObj.sections?.map(section => section.toMarkdown!()).concat("\n\n");
+  const text = epubObj.sections?.map(section => section.parsed_data.map(data => data.value).join("\n")).join("\n\n");
   return text;
 }
 
