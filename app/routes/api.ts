@@ -44,7 +44,6 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
   }
 
   const { url } = await head(id);
-  console.log(url)
   const text = isPdf ? await getPdf(url) : await getEpub(url);
 
   const systemMessage = {
