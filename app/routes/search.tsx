@@ -25,10 +25,10 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const id = formData.get("id")
   const extension = formData.get("extension")
-  const fileName = id + ".txt"
+  const textFileName = id + ".txt"
 
   try {
-    const { url } = await head(fileName); 
+    const { url } = await head(textFileName); 
     console.log("hit", url);   
     return redirect("/chat/" + id);
   } catch (e) {
@@ -41,17 +41,20 @@ export async function action({ request }: Route.ActionArgs) {
 
   const regex = /href="\/?(dl\/[^\/]+\/[^"]+)"/;
   const match = body.match(regex);
-  const downloadPath = match![1]
-  const downloadUrl = "https://z-lib.gs/" + downloadPath
+  const downloadPath = match![1];
+  const downloadResponse = await fetch("https://z-lib.gs/" + downloadPath);
+  
+  // Cache a copy of the original book
+  const blob = await put(id + "." + extension, await downloadResponse.arrayBuffer(), { access: "public", addRandomSuffix: false })
 
-  const text = await (extension === "pdf" ? getPdf(downloadUrl) : getEpub(downloadUrl));
-  const { url } = await put(fileName, text!, { access: "public", addRandomSuffix: false });
+  const text = await (extension === "pdf" ? extractPdf(blob.url) : extractEpub(blob.url));
+  const { url } = await put(textFileName, text!, { access: "public", addRandomSuffix: false });
   console.log("miss", url);
 
   return redirect("/chat/" + id);
 }
 
-async function getPdf(url: string) {
+async function extractPdf(url: string) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer));
@@ -60,7 +63,7 @@ async function getPdf(url: string) {
   return text;
 }
 
-async function getEpub(url: string) {
+async function extractEpub(url: string) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
