@@ -4,36 +4,7 @@ import { put, head } from "@vercel/blob";
 import { extractText, getDocumentProxy } from "unpdf";
 import { parseEpub } from "epub-parser-simple";
 
-export const config = { runtime: "edge" };
-
-let isCold = true;
-let initialDate = Date.now();
-
-export function headers() {
-  return {
-    'x-edge-age': Date.now() - initialDate,
-  };
-}
-
-function parseVercelId(id: string | null) {
-  const parts = id?.split(":").filter(Boolean);
-  if (!parts) {
-    console.log('"x-vercel-id" header not present. Running on localhost?');
-    return { proxyRegion: "localhost", computeRegion:"localhost" }
-  }
-  const proxyRegion = parts[0];
-  const computeRegion = parts[parts.length - 2];
-  return { proxyRegion, computeRegion }
-}
-
 export async function loader({ request }: Route.LoaderArgs) {
-  const wasCold = isCold;
-  isCold = false;
-
-  const parsedId = parseVercelId(request.headers.get("x-vercel-id"));
-
-  console.log({wasCold, parsedId})
-
   const url = new URL(request.url);
   const query = url.searchParams.get("q") || "";
 
