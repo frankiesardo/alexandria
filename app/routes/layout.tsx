@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router";
-import favicon from "public/favicon.ico" 
+import favicon from "/favicon.ico?url" 
 
 export default function Layout() {
   return (

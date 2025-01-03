@@ -8,10 +8,6 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
-  throw new Error("Hi")
-}
-
 export default function Home() {
   const navigation = useNavigation();
   const isLoading = navigation.formAction === "/search"
