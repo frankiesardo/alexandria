@@ -1,5 +1,13 @@
 import { Link, Outlet } from "react-router";
 import favicon from "/favicon.ico?url" 
+import type { Route } from "./+types/layout";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Alexandria" },
+    { name: "description", content: "Chat with every book in the world!" },
+  ];
+}
 
 export default function Layout() {
   return (

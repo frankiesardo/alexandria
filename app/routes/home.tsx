@@ -1,12 +1,4 @@
 import { Form, useNavigation } from "react-router";
-import type { Route } from "./+types/home";
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Alexandria" },
-    { name: "description", content: "Chat with every book in the world!" },
-  ];
-}
 
 export default function Home() {
   const navigation = useNavigation();
