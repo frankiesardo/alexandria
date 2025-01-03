@@ -3,13 +3,15 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText } from "ai";
 import { head } from "@vercel/blob";
 
+export const config = { runtime: "edge" };
+
 const openai = createOpenAICompatible({
   name: "openai-proxy",
   baseURL: `${process.env.OPENAI_API_BASE_URL}`,
   headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
 });
 
-export const action = async ({ request, params }: Route.ActionArgs) => {
+export async function action({ request, params }: Route.ActionArgs) {
   const { messages } = await request.json();
   const { id } = params;
   const fileName = id + ".txt"

@@ -4,6 +4,8 @@ import { put, head } from "@vercel/blob";
 import { extractText, getDocumentProxy } from "unpdf";
 import { parseEpub } from "epub-parser-simple";
 
+export const config = { runtime: "edge" };
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q") || "";
